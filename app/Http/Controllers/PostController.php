@@ -19,7 +19,12 @@ class PostController extends Controller
         $lastname = app('db')->select("SELECT lastname FROM posts WHERE id=1");
         $gander = app('db')->select("SELECT gender FROM posts WHERE id=1");
         $status = app('db')->select("SELECT status FROM posts WHERE id=1");
-        $wherenot = app('db')->select("SELECT id FROM posts WHERE id BETWEEN 0 AND 30");
+        $date = app('db')->select("SELECT created_at FROM posts WHERE id=1");
+        $wherenot = app('db')->select("SELECT id FROM posts WHERE id NOT BETWEEN 0 AND 10");
+        $where = app('db')->select("SELECT id FROM posts WHERE id BETWEEN 0 AND 10");
+        $or = app('db')->select("SELECT status FROM posts WHERE 'Active' OR 'Pending' OR 'Loss' OR 'Banned'");    
+
+
 
         $out = [
             "select" => $select,
@@ -47,17 +52,31 @@ class PostController extends Controller
                     "data" => $wherenot
                 ],
                 [
-                    "type" => ["whereNotBeetwen"],
-                    "data" => $wherenot
+                    "type" => ["whereBeetwen"],
+                    "data" => $where
+                ],
+                [
+                    "type" => ["orWhere"],
+                    "data" => $or
                 ],
             ],
             "current_page" => $getPost["current_page"],
-            "order" => $getPost["per_page"],
-            "results" => $getPost
+            "order" => [
+            [
+                "field" => ["name"],
+                "order" => $firstname
+                 ],
+            [
+                "field" => ["date"],
+                "order" => $date
+            ]
+            ]
+            // "results" => $getPost
         ];
  
         return response()->json($out, 200);
         // $jsonfile = json_encode($data, JSON_PRETTY_PRINT);
         // file_put_contents('jaghos.json', $jsonfile);
     }
+
 }
